@@ -1,5 +1,9 @@
-import { Heading } from "@chakra-ui/react";
+import { Container, Heading } from "@chakra-ui/react";
 
 export default function Home() {
-  return <Heading>Contact</Heading>;
+  return  (
+    <Container maxW="450px" mt={12}>
+      <Heading>Contact</Heading>
+    </Container>
+    );
 }
