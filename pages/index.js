@@ -10,6 +10,7 @@ import {
   Button
 } from "@chakra-ui/react";
 
+import { sendContactForm } from "../lib/api";
 
 const initValues = {
   name:"",
@@ -23,7 +24,7 @@ export default function Home() {
   const [state, setState]= useState(initState)
   const [touched, setToched]= useState({})
 
-  const {values} = state
+  const {values, isLoading} = state
 
   const handleChange = ({target}) => {
     setState((prev)=>({
@@ -39,6 +40,14 @@ export default function Home() {
     ...prev,
     [target.name]:true
   }))
+
+  const onSubmit = async () => {
+    setState((prev)=>({
+      ...prev,
+      isLoading:true,
+    }));
+    await sendContactForm(values)
+  }
 
   return  (
     <Container maxW="450px" mt={12}>
@@ -100,7 +109,9 @@ export default function Home() {
       <Button
         variant="outline"
         colorScheme="blue"
+        isLoading={isLoading}
         disabled={!values.name || !values.email || !values.subject || !values.message}
+        onClick={onSubmit}
       >
         Submit
       </Button>
