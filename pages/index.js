@@ -7,7 +7,9 @@ import {
   Heading, 
   Input, 
   Textarea,
-  Button
+  Button,
+  Text,
+  useToast
 } from "@chakra-ui/react";
 
 import { sendContactForm } from "../lib/api";
@@ -21,10 +23,11 @@ const initValues = {
 const initState = {values:initValues}
 
 export default function Home() {
+  const toast = useToast()
   const [state, setState]= useState(initState)
   const [touched, setToched]= useState({})
 
-  const {values, isLoading} = state
+  const {values, isLoading, error} = state
 
   const handleChange = ({target}) => {
     setState((prev)=>({
@@ -46,12 +49,36 @@ export default function Home() {
       ...prev,
       isLoading:true,
     }));
-    await sendContactForm(values)
+    try {
+      await sendContactForm(values)
+      setToched({});
+      setState(initState);
+      toast({
+        title: "Message sent.",
+        status: "success",
+        duration: 2000,
+        position: "top",
+      });
+    } catch (error) {
+      setState((prev)=>({
+        ...prev,
+        isLoading:false,
+        error:error.message,
+      }));
+    }
   }
 
   return  (
     <Container maxW="450px" mt={12}>
       <Heading>Contact</Heading>
+
+      {
+        error && (
+          <Text color="red.300" my={4} fontSize="xl">
+            {error}
+          </Text>
+        )
+      }
 
       <FormControl isRequired isInvalid={touched.name && !values.name} mb={5}>
         <FormLabel>Name</FormLabel>
